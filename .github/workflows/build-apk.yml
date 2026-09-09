@@ -1,18 +1,21 @@
-name: Build Ranked Draft Simulator APK
+name: Build and Release APK
 
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Setup Java
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -90,7 +93,6 @@ jobs:
 
                   <activity
                       android:name=".MainActivity"
-                      android:screenOrientation="unspecified"
                       android:exported="true">
 
                       <intent-filter>
@@ -114,12 +116,12 @@ jobs:
           </resources>
           EOF
 
-      - name: Download original app icon
+      - name: Use original app icon
         run: |
           wget -q "https://sparkling-biscochitos-e43888.netlify.app/icon-192.png" \
             -O app/src/main/res/drawable/app_icon.png
 
-      - name: Create launcher
+      - name: Create Android launcher
         run: |
           cat > app/src/main/java/com/rankeddraft/simulator/MainActivity.java <<'EOF'
           package com.rankeddraft.simulator;
@@ -132,10 +134,4 @@ jobs:
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
 
-          public class MainActivity extends Activity {
-
-              private WebView webView;
-
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                 
+         
