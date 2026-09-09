@@ -27,11 +27,7 @@ jobs:
         run: |
           mkdir -p app/src/main/java/com/rankeddraft/simulator
           mkdir -p app/src/main/res/drawable
-          mkdir -p app/src/main/res/mipmap-hdpi
-          mkdir -p app/src/main/res/mipmap-mdpi
-          mkdir -p app/src/main/res/mipmap-xhdpi
-          mkdir -p app/src/main/res/mipmap-xxhdpi
-          mkdir -p app/src/main/res/mipmap-xxxhdpi
+          mkdir -p app/src/main/res/values
 
           cat > settings.gradle <<'EOF'
           pluginManagement {
@@ -109,39 +105,29 @@ jobs:
           </manifest>
           EOF
 
-          mkdir -p app/src/main/res/values
-
           cat > app/src/main/res/values/styles.xml <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-
               <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
-                  <item name="android:fontFamily">sans</item>
-                  <item name="android:windowActionModeOverlay">true</item>
-                  <item name="android:colorAccent">#000000</item>
                   <item name="android:windowNoTitle">true</item>
               </style>
-
           </resources>
           EOF
 
       - name: Download original app icon
         run: |
-          wget -q https://sparkling-biscochitos-e43888.netlify.app/icon-192.png \
+          wget -q "https://sparkling-biscochitos-e43888.netlify.app/icon-192.png" \
             -O app/src/main/res/drawable/app_icon.png
 
-      - name: Create WebView launcher
+      - name: Create launcher
         run: |
           cat > app/src/main/java/com/rankeddraft/simulator/MainActivity.java <<'EOF'
           package com.rankeddraft.simulator;
 
           import android.app.Activity;
           import android.os.Bundle;
-          import android.webkit.ServiceWorkerClient;
-          import android.webkit.ServiceWorkerController;
           import android.webkit.WebChromeClient;
           import android.webkit.WebResourceRequest;
-          import android.webkit.WebResourceResponse;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
@@ -152,61 +138,4 @@ jobs:
 
               @Override
               protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-
-                  webView = new WebView(this);
-
-                  WebSettings settings = webView.getSettings();
-
-                  settings.setJavaScriptEnabled(true);
-                  settings.setDomStorageEnabled(true);
-                  settings.setDatabaseEnabled(true);
-                  settings.setAllowFileAccess(true);
-                  settings.setAllowContentAccess(true);
-                  settings.setSupportZoom(false);
-                  settings.setBuiltInZoomControls(false);
-                  settings.setDisplayZoomControls(false);
-                  settings.setLoadWithOverviewMode(false);
-                  settings.setUseWideViewPort(false);
-                  settings.setMediaPlaybackRequiresUserGesture(false);
-
-                  webView.setWebChromeClient(new WebChromeClient());
-
-                  webView.setWebViewClient(new WebViewClient() {
-                      @Override
-                      public boolean shouldOverrideUrlLoading(
-                              WebView view,
-                              WebResourceRequest request) {
-                          return false;
-                      }
-                  });
-
-                  ServiceWorkerController controller =
-                          ServiceWorkerController.getInstance();
-
-                  controller.setServiceWorkerClient(new ServiceWorkerClient() {
-                      @Override
-                      public WebResourceResponse shouldInterceptRequest(
-                              WebResourceRequest request) {
-                          return null;
-                      }
-                  });
-
-                  webView.loadUrl(
-                      "https://sparkling-biscochitos-e43888.netlify.app/"
-                  );
-
-                  setContentView(webView);
-              }
-
-              @Override
-              public void onBackPressed() {
-                  if (webView != null && webView.canGoBack()) {
-                      webView.goBack();
-                  } else {
-                      super.onBackPressed();
-                  }
-              }
-
-              @Override
-             
+                 
